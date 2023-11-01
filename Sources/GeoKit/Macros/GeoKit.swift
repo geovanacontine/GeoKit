@@ -6,3 +6,10 @@ public macro CKModel() = #externalMacro(module: "GeoKitMacros", type: "CKModelMa
 
 @attached(peer)
 public macro CKDerivedProperty(query: String) = #externalMacro(module: "GeoKitMacros", type: "CKDerivedPropertyMacro")
+
+@attached(member, names: named(run))
+public macro ReduxFeature() = #externalMacro(module: "GeoKitMacros", type: "ReduxFeatureMacro")
+
+@attached(peer, names: named(AppState))
+@attached(member, names: named(run))
+public macro Redux() = #externalMacro(module: "GeoKitMacros", type: "ReduxMacro")

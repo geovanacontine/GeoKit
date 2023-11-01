@@ -7,8 +7,8 @@ import CompilerPluginSupport
 let package = Package(
     name: "GeoKit",
     platforms: [
-        .macOS(.v12),
-        .iOS(.v13), 
+        .macOS(.v13),
+        .iOS(.v16),
         .tvOS(.v13),
         .watchOS(.v6),
         .macCatalyst(.v13)

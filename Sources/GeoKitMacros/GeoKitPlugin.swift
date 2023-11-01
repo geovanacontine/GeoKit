@@ -8,6 +8,8 @@ struct GeoKitPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         InitMacro.self,
         CKModelMacro.self,
-        CKDerivedPropertyMacro.self
+        CKDerivedPropertyMacro.self,
+        ReduxFeatureMacro.self,
+        ReduxMacro.self
     ]
 }
