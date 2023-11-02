@@ -1,6 +1,6 @@
 import Foundation
 
-public class CKContext {
+public class CKContext: CKContextProtocol {
     
     private var service: CKService
     private let cache = CKCache()
