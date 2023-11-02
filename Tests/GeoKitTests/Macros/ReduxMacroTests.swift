@@ -54,6 +54,7 @@ final class ReduxMacroTests: XCTestCase {
             enum ExploreAction {
                 case listAll
                 case listFiltered
+                case setFilter(value1: String, value2: Data)
             }
             
             """#,
@@ -61,6 +62,7 @@ final class ReduxMacroTests: XCTestCase {
             enum ExploreAction {
                 case listAll
                 case listFiltered
+                case setFilter(value1: String, value2: Data)
 
                 func run(usingMapper mapper: ExploreMapper) async {
                     switch self {
@@ -68,6 +70,8 @@ final class ReduxMacroTests: XCTestCase {
                         await mapper.listAll()
                     case .listFiltered:
                         await mapper.listFiltered()
+                    case .setFilter(let value1, let value2):
+                        await mapper.setFilter(value1: value1, value2: value2)
                     }
                 }
             }

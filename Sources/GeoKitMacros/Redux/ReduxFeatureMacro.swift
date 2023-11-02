@@ -24,11 +24,23 @@ public struct ReduxFeatureMacro: MemberMacro {
             .compactMap({
                 $0.as(MemberBlockItemSyntax.self)?
                 .decl.as(EnumCaseDeclSyntax.self)?
-                .elements.first?.name.text
+                .elements.first
             })
         
+        
         let membersSyntax = members.map { member in
-            "case .\(member): await mapper.\(member)()"
+            let parameters = member.parameterClause?.parameters.compactMap({ $0.firstName?.text }) ?? []
+            
+            if parameters.isEmpty {
+                return "case .\(member.name.text): await mapper.\(member.name.text)()"
+            } else {
+                let parametersLeftSyntax = parameters.map({ "let \($0)" })
+                let leftSyntax = parametersLeftSyntax.joined(separator: ", ")
+                
+                let parametersRightSyntax = parameters.map({ "\($0): \($0)" })
+                let rightSyntax = parametersRightSyntax.joined(separator: ", ")
+                return "case .\(member.name.text)(\(leftSyntax)): await mapper.\(member.name.text)(\(rightSyntax))"
+            }
         }
         
         return [
