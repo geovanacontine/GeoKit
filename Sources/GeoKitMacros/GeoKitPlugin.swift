@@ -10,6 +10,7 @@ struct GeoKitPlugin: CompilerPlugin {
         CKModelMacro.self,
         CKDerivedPropertyMacro.self,
         ReduxFeatureMacro.self,
-        ReduxMacro.self
+        ReduxMacro.self,
+        LoggerMacro.self
     ]
 }

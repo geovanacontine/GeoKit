@@ -13,3 +13,6 @@ public macro ReduxFeature() = #externalMacro(module: "GeoKitMacros", type: "Redu
 @attached(peer, names: named(AppState))
 @attached(member, names: named(run))
 public macro Redux() = #externalMacro(module: "GeoKitMacros", type: "ReduxMacro")
+
+@attached(peer, names: suffixed(WithLogger))
+public macro Logger(info: String, success: String, feature: String) = #externalMacro(module: "GeoKitMacros", type: "LoggerMacro")

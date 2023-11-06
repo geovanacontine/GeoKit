@@ -8,5 +8,6 @@ let testableMacros: [String: Macro.Type] = [
     "CKModel": CKModelMacro.self,
     "CKDerivedProperty": CKDerivedPropertyMacro.self,
     "ReduxFeature": ReduxFeatureMacro.self,
-    "Redux": ReduxMacro.self
+    "Redux": ReduxMacro.self,
+    "Logger": LoggerMacro.self
 ]

@@ -1,0 +1,65 @@
+import SwiftSyntax
+import SwiftSyntaxBuilder
+import SwiftSyntaxMacros
+
+public struct LoggerMacro: PeerMacro {
+    public static func expansion(
+        of node: SwiftSyntax.AttributeSyntax,
+        providingPeersOf declaration: some SwiftSyntax.DeclSyntaxProtocol,
+        in context: some SwiftSyntaxMacros.MacroExpansionContext
+    ) throws -> [SwiftSyntax.DeclSyntax] {
+        
+        guard let funcDecl = declaration.as(FunctionDeclSyntax.self) else { return [] }
+        
+        let identifier = funcDecl.name.text
+        let hasThrows = funcDecl.signature.effectSpecifiers?.throwsSpecifier != nil
+        let hasAsync = funcDecl.signature.effectSpecifiers?.asyncSpecifier != nil
+        let awaitSyntax = hasAsync ? "await" : ""
+        let asyncSyntax = hasAsync ? "async" : ""
+        
+        let parameters = funcDecl.signature.parameterClause.parameters.compactMap({ $0.as(FunctionParameterSyntax.self)?.firstName.text })
+        let parametersSyntax = parameters.map({ "\($0): \($0)" }).joined(separator: ", ")
+        let functionSyntax = identifier + "(\(parametersSyntax))"
+        
+        let hasReturn = funcDecl.signature.returnClause != nil
+        let returnSyntax = hasReturn ? "return" : ""
+        
+        let attributes = funcDecl.attributes.first?.as(AttributeSyntax.self)?.arguments?.as(LabeledExprListSyntax.self)
+        let attMessages = attributes?.compactMap({ $0.expression.as(StringLiteralExprSyntax.self)?.segments.first?.as(StringSegmentSyntax.self)?.content.text })
+        
+        let infoMessage = attMessages?[0] ?? ""
+        let successMessage = attMessages?[1] ?? ""
+        let logCategory = attMessages?[2] ?? ""
+        
+        if !hasThrows {
+            return [
+                """
+                func \(raw: identifier)WithLogger() \(raw: asyncSyntax) {
+                    let logger = GeoLogger.shared.makeLogger(forCategory: "\(raw: logCategory)")
+                    logger.info("\(raw: infoMessage)")
+                    \(raw: returnSyntax) try \(funcDecl)
+                    logger.notice("\(raw: successMessage)")
+                }
+                """
+            ]
+        }
+        
+        return [
+            """
+            func \(raw: identifier)WithLogger\(funcDecl.signature) {
+                let logger = GeoLogger.shared.makeLogger(forCategory: "\(raw: logCategory)")
+            
+                do {
+                    logger.info("\(raw: infoMessage)")
+                    let result = try \(raw: awaitSyntax) \(raw: functionSyntax)
+                    logger.notice("\(raw: successMessage)")
+                    \(raw: returnSyntax) result
+                } catch {
+                    GeoLogger.shared.error(error, logger: logger)
+                    throw error
+                }
+            }
+            """
+        ]
+    }
+}
