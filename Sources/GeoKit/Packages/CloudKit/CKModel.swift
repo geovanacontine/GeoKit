@@ -1,4 +1,4 @@
-import CloudKit
+@_exported import CloudKit
 
 public protocol CKModel: Identifiable {
     var id: String { get }

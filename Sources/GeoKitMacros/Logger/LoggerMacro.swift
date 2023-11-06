@@ -29,16 +29,17 @@ public struct LoggerMacro: PeerMacro {
         
         let infoMessage = attMessages?[0] ?? ""
         let successMessage = attMessages?[1] ?? ""
-        let logCategory = attMessages?[2] ?? ""
+        let errorMessage = attMessages?[2] ?? ""
+        let logCategory = attMessages?[3] ?? ""
         
         if !hasThrows {
             return [
                 """
                 func \(raw: identifier)WithLogger() \(raw: asyncSyntax) {
-                    let logger = GeoLogger.shared.makeLogger(forCategory: "\(raw: logCategory)")
+                    let logger = Logger(subsystem: GeoLogger.shared.subsystem, category: "\(raw: logCategory)")
                     logger.info("\(raw: infoMessage)")
                     \(raw: returnSyntax) try \(funcDecl)
-                    logger.notice("\(raw: successMessage)")
+                    logger.info("\(raw: successMessage)")
                 }
                 """
             ]
@@ -47,15 +48,23 @@ public struct LoggerMacro: PeerMacro {
         return [
             """
             func \(raw: identifier)WithLogger\(funcDecl.signature) {
-                let logger = GeoLogger.shared.makeLogger(forCategory: "\(raw: logCategory)")
+                let logger = Logger(subsystem: GeoLogger.shared.subsystem, category: "\(raw: logCategory)")
+                let startTime = Date.now
             
                 do {
                     logger.info("\(raw: infoMessage)")
                     let result = try \(raw: awaitSyntax) \(raw: functionSyntax)
-                    logger.notice("\(raw: successMessage)")
+            
+                    let endTime = Date.now
+                    let durationTimeInterval = endTime.timeIntervalSince(startTime)
+                    let durationInSeconds = String(format: "%.1f", durationTimeInterval)
+                    logger.info("\(raw: successMessage) [\\(durationInSeconds)s]")
+            
                     \(raw: returnSyntax) result
                 } catch {
-                    GeoLogger.shared.error(error, logger: logger)
+                    let errorString = error as CustomStringConvertible
+                    let errorDescription = errorString.description
+                    logger.error("\(raw: errorMessage). Error: \\(errorDescription)")
                     throw error
                 }
             }

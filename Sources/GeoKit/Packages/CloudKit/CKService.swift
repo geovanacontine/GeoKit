@@ -40,7 +40,7 @@ extension CKService {
     func fetch<T: CKModel>(predicate: NSPredicate) async throws -> [T] {
         let recordType = String(describing: T.self)
         let query = CKQuery(recordType: recordType, predicate: predicate)
-        let records = await database.fetchAll(withQuery: query)
+        let records = try await database.fetchAll(withQuery: query)
         return try records.map({ try T.init(record: $0) })
     }
     
