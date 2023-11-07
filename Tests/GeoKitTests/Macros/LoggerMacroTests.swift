@@ -11,7 +11,8 @@ final class LoggerMacroTests: XCTestCase {
             @Logger(
                 info: "Doing something",
                 success: "Done successfully!",
-                feature: "Account"
+                error: "Unexpected error!",
+                category: "Account"
             )
             func exampleFunction(prm1: String, var2: Double) async throws -> String {
                 "Do something"
@@ -24,15 +25,23 @@ final class LoggerMacroTests: XCTestCase {
             }
 
             func exampleFunctionWithLogger(prm1: String, var2: Double) async throws -> String  {
-                let logger = GeoLogger.shared.makeLogger(forCategory: "Account")
+                let logger = Logger(subsystem: GeoLogger.shared.subsystem, category: "Account")
+                let startTime = Date.now
 
                 do {
                     logger.info("Doing something")
                     let result = try await exampleFunction(prm1: prm1, var2: var2)
-                    logger.notice("Done successfully!")
+
+                    let endTime = Date.now
+                    let durationTimeInterval = endTime.timeIntervalSince(startTime)
+                    let durationInSeconds = String(format: "%.1f", durationTimeInterval)
+                    logger.info("Done successfully! [\(durationInSeconds)s]")
+
                     return result
                 } catch {
-                    GeoLogger.shared.error(error, logger: logger)
+                    let errorString = error as CustomStringConvertible
+                    let errorDescription = errorString.description
+                    logger.error("Unexpected error!. Error: \(errorDescription)")
                     throw error
                 }
             }

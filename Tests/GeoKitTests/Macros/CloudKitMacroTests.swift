@@ -48,7 +48,7 @@ final class CloudKitMacroTests: XCTestCase {
                 }
 
                 public mutating func fetchDerivedProperties() async throws {
-                    property3 = try await CKContext.shared.fetch(predicate: NSPredicate(value: true)).first
+                    property3 = try await CKContext.shared.fetch(withPredicate: NSPredicate(value: true)).first
                 }
             }
 

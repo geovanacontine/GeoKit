@@ -1,5 +1,4 @@
 import SwiftUI
-import GeoKit
 
 struct ViewLoggerModifier: ViewModifier {
     

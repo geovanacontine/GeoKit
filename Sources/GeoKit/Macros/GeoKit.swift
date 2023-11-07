@@ -7,12 +7,11 @@ public macro CKModel() = #externalMacro(module: "GeoKitMacros", type: "CKModelMa
 @attached(peer)
 public macro CKDerivedProperty(query: String) = #externalMacro(module: "GeoKitMacros", type: "CKDerivedPropertyMacro")
 
-@attached(member, names: named(run))
-public macro ReduxFeature() = #externalMacro(module: "GeoKitMacros", type: "ReduxFeatureMacro")
+@attached(member, names: named(reduce), named(init), named(effects), named(reducer))
+public macro ReducerFeature() = #externalMacro(module: "GeoKitMacros", type: "ReducerFeatureMacro")
 
-@attached(peer, names: named(AppState))
-@attached(member, names: named(run))
-public macro Redux() = #externalMacro(module: "GeoKitMacros", type: "ReduxMacro")
+@attached(member, names: named(run), named(state), named(State), named(Action))
+public macro ReducerStore(features: String...) = #externalMacro(module: "GeoKitMacros", type: "ReducerStoreMacro")
 
 @attached(peer, names: suffixed(WithLogger))
 public macro Logger(_ info: String, success: String, error: String, feature: String) = #externalMacro(module: "GeoKitMacros", type: "LoggerMacro")
